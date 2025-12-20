@@ -11,7 +11,7 @@ app.use(cors()); // 2. 모든 도메인에서의 접속 허용 (통신의 핵심
 app.use(express.json()); // JSON 데이터를 받기 위해 필수!
 
 
-const MONGO_URI = 'mongodb+srv://Librarian_user:koreauniv25@mybookstory.4j6amn5.mongodb.net/?appName=myBookStory';
+const MONGO_URI = process.env.MONGO_URI;
 // 1. MongoDB 연결 (데이터베이스 이름: mybookstory)
 mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ MongoDB 연결 성공!'))
@@ -52,7 +52,7 @@ app.get('/api/reviews', async (req, res) => {
 
 
 // 알라딘 API 키 (환경변수 설정 권장)
-const TTB_KEY = 'ttbpjs9302241744001';
+const TTB_KEY = process.env.TTB_KEY;
 
 app.get('/api/search', async (req, res) => {
     try {
