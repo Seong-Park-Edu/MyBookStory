@@ -8,7 +8,7 @@ const app = express();
 const PORT = 4000;
 
 app.use(cors({
-    origin: 'https://my-book-story.vercel.app/', // 1. 프론트엔드 도메인 허용
+    origin: 'https://my-book-story.vercel.app', // 1. 프론트엔드 도메인 허용
 }));
 app.use(express.json()); // JSON 데이터를 받기 위해 필수!
 
