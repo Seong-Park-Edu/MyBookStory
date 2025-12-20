@@ -37,6 +37,7 @@ function App() {
     } catch (err) {
       console.error("검색 중 오류:", err);
       alert("서버가 켜져 있는지 확인해 주세요!");
+      alert(`서버 주소: ${API_URL}\n에러 메시지: ${err.message}`);
     }
   };
 
