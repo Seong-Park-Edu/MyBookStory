@@ -59,7 +59,7 @@ const TTB_KEY = process.env.TTB_KEY;
 app.get('/api/search', async (req, res) => {
     try {
         const { query } = req.query;
-        const response = await axios.get('http://www.aladin.co.kr/ttb/api/ItemSearch.aspx', {
+        const response = await axios.get('https://www.aladin.co.kr/ttb/api/ItemSearch.aspx', {
             params: {
                 ttbkey: TTB_KEY,
                 Query: query,
