@@ -85,9 +85,19 @@ function App() {
         <button onClick={handleSearch} style={{ padding: '10px 20px', marginLeft: '10px' }}>검색</button>
       </div>
 
-      <div style={{ display: 'flex', gap: '20px' }}>
-        {/* 검색 결과 목록 */}
-        <div style={{ flex: 1, maxHeight: '80vh', overflowY: 'auto' }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: window.innerWidth < 768 ? 'column' : 'row', // 768px 미만(모바일)이면 세로로!
+        gap: '20px'
+      }}>
+        {/* 검색 결과 목록 (모바일에서는 높이를 조절해주는 게 좋아요) */}
+        <div style={{
+          flex: 1,
+          maxHeight: window.innerWidth < 768 ? '300px' : '80vh',
+          overflowY: 'auto',
+          border: '1px solid #eee',
+          padding: '10px'
+        }}>
           {books.map((book) => (
             <div key={book.isbn13}
               style={{ border: '1px solid #ddd', padding: '10px', marginBottom: '10px', cursor: 'pointer', borderRadius: '5px' }}
