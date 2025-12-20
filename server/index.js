@@ -7,7 +7,9 @@ require('dotenv').config(); // API 키 보호를 위해 사용
 const app = express();
 const PORT = 4000;
 
-app.use(cors()); // 2. 모든 도메인에서의 접속 허용 (통신의 핵심!)
+app.use(cors({
+    origin: 'https://my-book-story.vercel.app/', // 1. 프론트엔드 도메인 허용
+}));
 app.use(express.json()); // JSON 데이터를 받기 위해 필수!
 
 
