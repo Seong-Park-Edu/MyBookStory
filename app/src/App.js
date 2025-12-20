@@ -10,11 +10,12 @@ function App() {
   const [content, setContent] = useState('');
   const [myReviews, setMyReviews] = useState([]); // 내 독후감 목록 상태
   const [viewingReview, setViewingReview] = useState(null); // 상세보기용 상태
+  const API_URL = "https://mybookstory.onrender.com";
 
   // 서버에서 독후감 목록을 가져오는 함수
   const fetchReviews = async () => {
     try {
-      const res = await axios.get('http://localhost:4000/api/reviews');
+      const res = await axios.get(`${API_URL}/api/reviews`);
       setMyReviews(res.data);
     } catch (err) {
       console.error("목록 로딩 실패:", err);
@@ -30,7 +31,7 @@ function App() {
   const handleSearch = async () => {
     if (!query) return;
     try {
-      const res = await axios.get(`http://localhost:4000/api/search?query=${query}`);
+      const res = await axios.get(`${API_URL}/api/search?query=${query}`);
       setBooks(res.data);
       setSelectedBook(null);
     } catch (err) {
@@ -51,7 +52,7 @@ function App() {
 
     try {
       // axios를 사용해 서버의 POST API 호출
-      const res = await axios.post('http://localhost:4000/api/reviews', reviewData);
+      const res = await axios.post(`${API_URL}/api/reviews`, reviewData);
 
       alert(res.data.message); // "성공적으로 저장되었습니다!"
 
