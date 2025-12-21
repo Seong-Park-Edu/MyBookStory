@@ -125,6 +125,51 @@ function App() {
         </button>
       </div>
 
+      {/* --- 여기서부터 추가: 검색 결과 목록 --- */}
+      {books.length > 0 && (
+        <div style={{
+          marginBottom: '30px',
+          maxHeight: '400px',
+          overflowY: 'auto',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          padding: '15px',
+          backgroundColor: '#fff',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <span style={{ fontWeight: 'bold' }}>검색 결과 ({books.length}건)</span>
+            <button onClick={() => setBooks([])} style={{ border: 'none', background: 'none', color: '#999', cursor: 'pointer' }}>닫기</button>
+          </div>
+          {books.map((book) => (
+            <div 
+              key={book.isbn13}
+              onClick={() => {
+                setSelectedBook(book);
+                setBooks([]); // 책 선택 시 목록 닫기
+              }}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                padding: '10px', 
+                borderBottom: '1px solid #eee', 
+                cursor: 'pointer',
+                transition: 'background 0.2s'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.background = '#f8f9fa'}
+              onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+            >
+              <img src={book.cover} alt="cover" style={{ width: '40px', marginRight: '15px', borderRadius: '3px' }} />
+              <div>
+                <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{book.title}</div>
+                <div style={{ fontSize: '12px', color: '#666' }}>{book.author}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {/* --- 여기까지 추가 --- */}
+
       {/* 2. 메인 콘텐츠 (작성 영역) */}
       <div style={{ marginBottom: '50px' }}>
         {selectedBook ? (
