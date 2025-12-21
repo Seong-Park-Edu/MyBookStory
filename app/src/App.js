@@ -171,13 +171,16 @@ function App() {
       {/* 4. 상세보기 및 수정 모달 */}
       {viewingReview && (
         <>
-          {/* 배경 어둡게 */}
+          {/* 배경 어둡게 (Overlay) */}
           <div
             onClick={() => setViewingReview(null)}
-            style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000 }}
+            style={{
+              position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+              backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000
+            }}
           />
 
-          {/* 상세보기 모달 본체 */}
+          {/* 모달 창 본체 */}
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
             backgroundColor: '#fff', padding: '25px', borderRadius: '15px', zIndex: 1001,
@@ -185,25 +188,27 @@ function App() {
             display: 'flex', flexDirection: 'column', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>『{viewingReview.title}』</h3>
-              <button onClick={() => setViewingReview(null)} style={{ border: '1px solid #ccc', background: '#f8f9fa', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
+              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>『{viewingReview.title}』 - [v2]</h3>
+              <button
+                onClick={() => setViewingReview(null)}
+                style={{ border: 'none', background: 'none', fontSize: '24px', cursor: 'pointer' }}
+              >&times;</button>
             </div>
 
-            <p style={{ color: '#666', fontSize: '14px', marginBottom: '10px' }}>{viewingReview.author}</p>
-            <hr style={{ border: '0', borderTop: '1px solid #eee', marginBottom: '20px' }} />
+            <p style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>{viewingReview.author}</p>
 
-            {/* 1. 이 자리에 에디터가 반드시 있어야 합니다 */}
-            <div style={{ flex: 1 }}>
+            {/* 에디터: 이 부분이 있어야 수정이 가능합니다 */}
+            <div style={{ marginBottom: '20px' }}>
               <ReactQuill
                 theme="snow"
-                value={content} // 이 content가 수정될 내용을 담습니다.
-                onChange={setContent}
+                value={content} // useEffect로 담긴 기존 내용이 보임
+                onChange={setContent} // 타이핑하면 content 상태가 바뀜
                 style={{ height: '200px', marginBottom: '45px' }}
               />
             </div>
 
-            {/* 2. 이 버튼들이 안 보였던 이유는 에디터가 버튼을 밀어냈거나 코드가 누락되었기 때문입니다 */}
-            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+            {/* 버튼: 이 코드가 있어야 수정/삭제 버튼이 보입니다 */}
+            <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={() => updateReview(viewingReview._id, content)}
                 style={{ flex: 1, padding: '12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
