@@ -12,6 +12,21 @@ function App() {
   const [viewingReview, setViewingReview] = useState(null); // 상세보기용 상태
   const API_URL = "https://mybookstory.onrender.com";
 
+  // 앱이 처음 실행될 때 자동으로 목록을 한 번 불러옵니다.
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  useEffect(() => {
+  if (viewingReview) {
+    // 서재에서 책을 클릭하면, 그 책의 내용을 에디터 상태에 복사해줍니다.
+    setContent(viewingReview.content);
+  } else {
+    // 팝업을 닫으면 에디터 내용을 비워줍니다 (선택 사항)
+    setContent('');
+  }
+}, [viewingReview]); // viewingReview가 바뀔 때마다 실행!
+
   // 서버에서 독후감 목록을 가져오는 함수
   const fetchReviews = async () => {
     try {
@@ -21,11 +36,6 @@ function App() {
       console.error("목록 로딩 실패:", err);
     }
   };
-
-  // 앱이 처음 실행될 때 자동으로 목록을 한 번 불러옵니다.
-  useEffect(() => {
-    fetchReviews();
-  }, []);
 
   // 도서 검색 (백엔드 서버:4000 포트 호출)
   const handleSearch = async () => {
@@ -67,6 +77,31 @@ function App() {
     } catch (err) {
       console.error("저장 실패:", err);
       alert("서버 통신 오류로 저장하지 못했습니다.");
+    }
+  };
+
+  // 독후감 삭제
+  const deleteReview = async (id) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      await axios.delete(`${API_URL}/api/reviews/${id}`);
+      alert("삭제되었습니다.");
+      setViewingReview(null); // 팝업 닫기
+      fetchReviews(); // 목록 새로고침
+    } catch (err) {
+      alert("삭제 실패");
+    }
+  };
+
+  //독후감 수정
+  // 상세 보기 팝업 안에 추가할 '수정 완료' 함수
+  const updateReview = async (id, newContent) => {
+    try {
+      await axios.put(`${API_URL}/api/reviews/${id}`, { content: newContent });
+      alert("수정되었습니다.");
+      fetchReviews(); // 목록 새로고침
+    } catch (err) {
+      alert("수정 실패");
     }
   };
 
@@ -154,17 +189,33 @@ function App() {
         {/* 독후감 상세보기 모달 */}
         {/* 상세 보기 창 (viewingReview가 있을 때만 뜸) */}
         {viewingReview && (
-          <div style={{
-            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            background: '#fff', padding: '30px', border: '1px solid #333', borderRadius: '10px',
-            zIndex: 1000, width: '80%', maxHeight: '80vh', overflowY: 'auto', boxShadow: '0 0 15px rgba(0,0,0,0.5)'
-          }}>
+          <div style={{ /* 기존 스타일 유지 */ }}>
             <button onClick={() => setViewingReview(null)} style={{ float: 'right' }}>닫기</button>
             <h2>{viewingReview.title}</h2>
-            <p style={{ color: '#666' }}>{viewingReview.author}</p>
-            <hr />
-            {/* Quill 에디터로 쓴 HTML 내용을 그대로 보여줄 때 사용하는 특수 속성 */}
-            <div dangerouslySetInnerHTML={{ __html: viewingReview.content }} />
+
+            {/* 수정 가능한 에디터 (상세보기창에서 바로 수정 가능하게 함) */}
+            <div style={{ marginTop: '20px' }}>
+              <ReactQuill
+                theme="snow"
+                defaultValue={viewingReview.content}
+                onChange={(val) => setContent(val)} // 임시로 content 상태 사용
+                style={{ height: '300px', marginBottom: '50px' }}
+              />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  onClick={() => updateReview(viewingReview._id, content)}
+                  style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '5px' }}
+                >
+                  수정 완료
+                </button>
+                <button
+                  onClick={() => deleteReview(viewingReview._id)}
+                  style={{ flex: 1, padding: '10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '5px' }}
+                >
+                  삭제하기
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

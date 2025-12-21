@@ -41,15 +41,37 @@ app.post('/api/reviews', async (req, res) => {
     }
 });
 
-// 모든 독후감 목록 가져오기 API
+// 모든 독후감 목록 가져오기 API (Get)
 app.get('/api/reviews', async (req, res) => {
-  try {
-    const reviews = await Review.find().sort({ date: -1 }); // 최신순으로 정렬
-    res.json(reviews);
-  } catch (err) {
-    res.status(500).json({ message: "데이터를 불러오는 데 실패했습니다." });
-  }
+    try {
+        const reviews = await Review.find().sort({ date: -1 }); // 최신순으로 정렬
+        res.json(reviews);
+    } catch (err) {
+        res.status(500).json({ message: "데이터를 불러오는 데 실패했습니다." });
+    }
 });
+
+// 삭제 API
+app.delete('/api/reviews/:id', async (req, res) => {
+    try {
+        await Review.findByIdAndDelete(req.params.id);
+        res.json({ message: "삭제되었습니다." });
+    } catch (err) {
+        res.status(500).json({ error: "삭제 실패" });
+    }
+});
+
+// 수정 API
+app.put('/api/reviews/:id', async (req, res) => {
+    try {
+        const { content } = req.body;
+        await Review.findByIdAndUpdate(req.params.id, { content: content });
+        res.json({ message: "수정되었습니다." });
+    } catch (err) {
+        res.status(500).json({ error: "수정 실패" });
+    }
+});
+
 // --------------------------------------------------------------------------------
 
 
