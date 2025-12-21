@@ -107,7 +107,7 @@ function App() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '900px', margin: '0 auto', position: 'relative' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>📖 MyBookStory [v4]</h1>
+      <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>📖 MyBookStory</h1>
 
       {/* 1. 검색 섹션 */}
       <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
@@ -233,7 +233,7 @@ function App() {
             display: 'flex', flexDirection: 'column', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>『{viewingReview.title}』 - [v2]</h3>
+              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>『{viewingReview.title}』</h3>
               <button
                 onClick={() => setViewingReview(null)}
                 style={{ border: 'none', background: 'none', fontSize: '24px', cursor: 'pointer' }}
