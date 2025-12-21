@@ -18,14 +18,14 @@ function App() {
   }, []);
 
   useEffect(() => {
-  if (viewingReview) {
-    // 서재에서 책을 클릭하면, 그 책의 내용을 에디터 상태에 복사해줍니다.
-    setContent(viewingReview.content);
-  } else {
-    // 팝업을 닫으면 에디터 내용을 비워줍니다 (선택 사항)
-    setContent('');
-  }
-}, [viewingReview]); // viewingReview가 바뀔 때마다 실행!
+    if (viewingReview) {
+      // 서재에서 책을 클릭하면, 그 책의 내용을 에디터 상태에 복사해줍니다.
+      setContent(viewingReview.content);
+    } else {
+      // 팝업을 닫으면 에디터 내용을 비워줍니다 (선택 사항)
+      setContent('');
+    }
+  }, [viewingReview]); // viewingReview가 바뀔 때마다 실행!
 
   // 서버에서 독후감 목록을 가져오는 함수
   const fetchReviews = async () => {
@@ -187,30 +187,51 @@ function App() {
         </div>
 
         {/* 독후감 상세보기 모달 */}
-        {/* 상세 보기 창 (viewingReview가 있을 때만 뜸) */}
         {viewingReview && (
-          <div style={{ /* 기존 스타일 유지 */ }}>
-            <button onClick={() => setViewingReview(null)} style={{ float: 'right' }}>닫기</button>
-            <h2>{viewingReview.title}</h2>
+          <div style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)', // 화면 정중앙 배치
+            background: '#fff',
+            padding: '20px',
+            border: '2px solid #333',
+            borderRadius: '10px',
+            zIndex: 2000, // 가장 위에 뜨도록 설정
+            width: window.innerWidth < 768 ? '90%' : '600px', // 모바일에서는 꽉 차게
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            boxShadow: '0 0 20px rgba(0,0,0,0.3)'
+          }}>
+            <button
+              onClick={() => setViewingReview(null)}
+              style={{ float: 'right', padding: '5px 10px', cursor: 'pointer' }}
+            >
+              닫기
+            </button>
 
-            {/* 수정 가능한 에디터 (상세보기창에서 바로 수정 가능하게 함) */}
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>『{viewingReview.title}』</h2>
+            <p style={{ color: '#666', fontSize: '0.9rem' }}>{viewingReview.author}</p>
+            <hr />
+
+            {/* 수정 가능한 에디터 */}
             <div style={{ marginTop: '20px' }}>
               <ReactQuill
                 theme="snow"
-                defaultValue={viewingReview.content}
-                onChange={(val) => setContent(val)} // 임시로 content 상태 사용
-                style={{ height: '300px', marginBottom: '50px' }}
+                value={content} // defaultValue 대신 value 사용 (useEffect와 연동)
+                onChange={setContent}
+                style={{ height: '250px', marginBottom: '50px' }}
               />
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button
                   onClick={() => updateReview(viewingReview._id, content)}
-                  style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '5px' }}
+                  style={{ flex: 1, padding: '12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
                 >
                   수정 완료
                 </button>
                 <button
                   onClick={() => deleteReview(viewingReview._id)}
-                  style={{ flex: 1, padding: '10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '5px' }}
+                  style={{ flex: 1, padding: '12px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
                 >
                   삭제하기
                 </button>
