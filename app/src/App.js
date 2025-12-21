@@ -107,7 +107,7 @@ function App() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '900px', margin: '0 auto', position: 'relative' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>📖 MyBookStory</h1>
+      <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>📖 MyBookStory [v4]</h1>
 
       {/* 1. 검색 섹션 */}
       <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
@@ -274,4 +274,5 @@ function App() {
   );
 }
 
+// 의미없는 줄입니당 (vercel 재배포 용)
 export default App;
