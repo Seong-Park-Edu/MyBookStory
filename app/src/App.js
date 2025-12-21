@@ -177,27 +177,32 @@ function App() {
             style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000 }}
           />
 
-          {/* 모달 창 */}
+          {/* 상세보기 모달 본체 */}
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            backgroundColor: '#fff', padding: '20px', borderRadius: '15px', zIndex: 1001,
+            backgroundColor: '#fff', padding: '25px', borderRadius: '15px', zIndex: 1001,
             width: '90%', maxWidth: '500px', maxHeight: '85vh', overflowY: 'auto',
             display: 'flex', flexDirection: 'column', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
               <h3 style={{ margin: 0, fontSize: '1.1rem' }}>『{viewingReview.title}』</h3>
-              <button onClick={() => setViewingReview(null)} style={{ border: 'none', background: 'none', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
+              <button onClick={() => setViewingReview(null)} style={{ border: '1px solid #ccc', background: '#f8f9fa', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
             </div>
 
+            <p style={{ color: '#666', fontSize: '14px', marginBottom: '10px' }}>{viewingReview.author}</p>
+            <hr style={{ border: '0', borderTop: '1px solid #eee', marginBottom: '20px' }} />
+
+            {/* 1. 이 자리에 에디터가 반드시 있어야 합니다 */}
             <div style={{ flex: 1 }}>
               <ReactQuill
                 theme="snow"
-                value={content}
+                value={content} // 이 content가 수정될 내용을 담습니다.
                 onChange={setContent}
                 style={{ height: '200px', marginBottom: '45px' }}
               />
             </div>
 
+            {/* 2. 이 버튼들이 안 보였던 이유는 에디터가 버튼을 밀어냈거나 코드가 누락되었기 때문입니다 */}
             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
               <button
                 onClick={() => updateReview(viewingReview._id, content)}
