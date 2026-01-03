@@ -13,6 +13,8 @@ function App() {
   const [myReviews, setMyReviews] = useState([]);
   const [viewingReview, setViewingReview] = useState(null);
   const [session, setSession] = useState(null);
+  const [isEditing, setIsEditing] = useState(false); // 수정 모드인지 확인
+  const [editContent, setEditContent] = useState(''); // 수정 중인 내용
 
   // 모달 제어 상태
   const [isListModalOpen, setIsListModalOpen] = useState(false);
@@ -93,8 +95,44 @@ function App() {
     }
   };
 
+  // 독후감 삭제 함수
+  const deleteReview = async (id) => {
+    if (!window.confirm("정말로 이 독후감을 삭제하시겠습니까?")) return;
+
+    try {
+      const { error } = await supabase.from('reviews').delete().eq('id', id);
+      if (error) throw error;
+
+      alert("삭제되었습니다.");
+      setViewingReview(null); // 모달 닫기
+      fetchReviews(); // 목록 새로고침
+    } catch (err) {
+      alert("삭제 실패: " + err.message);
+    }
+  };
+
+  // 독후감 수정 저장 함수
+  const updateReview = async (id) => {
+    try {
+      const { error } = await supabase
+        .from('reviews')
+        .update({ content: editContent })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      alert("수정되었습니다.");
+      setIsEditing(false);
+      // 상세 보기 데이터 업데이트를 위해 현재 보고 있는 리뷰 상태도 갱신
+      setViewingReview({ ...viewingReview, content: editContent });
+      fetchReviews(); // 목록 새로고침
+    } catch (err) {
+      alert("수정 실패: " + err.message);
+    }
+  };
+
   // 서재 내 검색 필터링
-  const filteredReviews = myReviews.filter(rev => 
+  const filteredReviews = myReviews.filter(rev =>
     rev.title.toLowerCase().includes(listSearchQuery.toLowerCase()) ||
     rev.author.toLowerCase().includes(listSearchQuery.toLowerCase())
   );
@@ -103,7 +141,7 @@ function App() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: '#f0f2f5', overflow: 'hidden', fontFamily: 'sans-serif' }}>
-      
+
       {/* --- [왼쪽 섹션: 실시간 채팅] --- */}
       <div style={{ width: '380px', borderRight: '1px solid #ddd', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '20px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -120,10 +158,10 @@ function App() {
 
       {/* --- [오른쪽 섹션: 메인 작업 영역] --- */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        
+
         {/* 네비게이션 바 */}
         <div style={{ height: '65px', backgroundColor: '#fff', borderBottom: '1px solid #ddd', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 30px' }}>
-          <button 
+          <button
             onClick={() => setIsListModalOpen(true)}
             style={{ padding: '10px 20px', cursor: 'pointer', borderRadius: '25px', border: '2px solid #333', backgroundColor: '#fff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
@@ -133,14 +171,14 @@ function App() {
 
         {/* 에디터 메인 */}
         <div style={{ flex: 1, padding: '40px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
+
           {/* 검색창 */}
           <div style={{ display: 'flex', gap: '12px' }}>
-            <input 
-              value={query} 
-              onChange={(e) => setQuery(e.target.value)} 
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="독후감을 작성할 책을 검색해 보세요..." 
+              placeholder="독후감을 작성할 책을 검색해 보세요..."
               style={{ flex: 1, padding: '15px', borderRadius: '12px', border: '1px solid #ccc', fontSize: '16px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}
             />
             <button onClick={handleSearch} style={{ padding: '0 30px', backgroundColor: '#333', color: '#fff', borderRadius: '12px', cursor: 'pointer', border: 'none', fontSize: '16px' }}>검색</button>
@@ -177,7 +215,7 @@ function App() {
                 </>
               ) : (
                 <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#bbb', textAlign: 'center' }}>
-                  <p>위 검색창에서 책을 찾고<br/>왼쪽 결과에서 책을 선택해 주세요.</p>
+                  <p>위 검색창에서 책을 찾고<br />왼쪽 결과에서 책을 선택해 주세요.</p>
                 </div>
               )}
             </div>
@@ -192,9 +230,9 @@ function App() {
             <div style={{ padding: '25px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1 }}>
                 <h2 style={{ margin: 0 }}>📚 나의 서재</h2>
-                <input 
-                  placeholder="제목이나 저자로 내 글 찾기..." 
-                  value={listSearchQuery} 
+                <input
+                  placeholder="제목이나 저자로 내 글 찾기..."
+                  value={listSearchQuery}
                   onChange={(e) => setListSearchQuery(e.target.value)}
                   style={{ width: '350px', padding: '12px 20px', borderRadius: '25px', border: '1px solid #ddd', fontSize: '14px' }}
                 />
@@ -218,17 +256,39 @@ function App() {
       {viewingReview && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 4000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ backgroundColor: '#fff', width: '700px', maxHeight: '85vh', borderRadius: '20px', padding: '40px', overflowY: 'auto', position: 'relative' }}>
-            <button onClick={() => setViewingReview(null)} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', background: 'none', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
+
+            {/* 닫기 버튼 */}
+            <button onClick={() => { setViewingReview(null); setIsEditing(false); }} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', background: 'none', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
+
             <div style={{ display: 'flex', gap: '25px', marginBottom: '30px' }}>
               <img src={viewingReview.cover} style={{ width: '120px', borderRadius: '8px' }} alt="v" />
-              <div>
+              <div style={{ flex: 1 }}>
                 <h2 style={{ margin: '0 0 10px 0' }}>{viewingReview.title}</h2>
-                <p style={{ color: '#666' }}>{viewingReview.author}</p>
-                <p style={{ fontSize: '13px', color: '#aaa' }}>작성일: {new Date(viewingReview.created_at).toLocaleString()}</p>
+                <p style={{ color: '#666', margin: '0 0 10px 0' }}>{viewingReview.author}</p>
+
+                {/* 수정/삭제 버튼들 */}
+                {!isEditing && (
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button onClick={() => { setIsEditing(true); setEditContent(viewingReview.content); }} style={{ padding: '5px 15px', borderRadius: '5px', border: '1px solid #007bff', color: '#007bff', backgroundColor: '#fff', cursor: 'pointer' }}>수정</button>
+                    <button onClick={() => deleteReview(viewingReview.id)} style={{ padding: '5px 15px', borderRadius: '5px', border: '1px solid #dc3545', color: '#dc3545', backgroundColor: '#fff', cursor: 'pointer' }}>삭제</button>
+                  </div>
+                )}
               </div>
             </div>
+
             <hr style={{ border: '0.5px solid #eee', marginBottom: '30px' }} />
-            <div className="ql-editor" dangerouslySetInnerHTML={{ __html: viewingReview.content }} style={{ lineHeight: '1.8', fontSize: '16px' }} />
+
+            {isEditing ? (
+              <div style={{ height: '300px', marginBottom: '60px' }}>
+                <ReactQuill theme="snow" value={editContent} onChange={setEditContent} style={{ height: '100%' }} />
+                <div style={{ display: 'flex', gap: '10px', marginTop: '50px', justifyContent: 'flex-end' }}>
+                  <button onClick={() => setIsEditing(false)} style={{ padding: '10px 20px', borderRadius: '5px', border: '1px solid #ccc', cursor: 'pointer' }}>취소</button>
+                  <button onClick={() => updateReview(viewingReview.id)} style={{ padding: '10px 20px', borderRadius: '5px', border: 'none', backgroundColor: '#007bff', color: '#fff', cursor: 'pointer' }}>수정 완료</button>
+                </div>
+              </div>
+            ) : (
+              <div className="ql-editor" dangerouslySetInnerHTML={{ __html: viewingReview.content }} style={{ lineHeight: '1.8', fontSize: '16px' }} />
+            )}
           </div>
         </div>
       )}
