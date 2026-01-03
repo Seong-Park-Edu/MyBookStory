@@ -9,37 +9,37 @@ export default function Chat({ session }) {
     useEffect(() => {
         // 1. 기존 메시지 불러오기
         const fetchMessages = async () => {
-            const { data } = await supabase.from('messages').select('*').order('created_at', { ascending: true })
-            setMessages(data || [])
-        }
-        fetchMessages()
+            const { data } = await supabase.from('messages').select('*').order('created_at', { ascending: true });
+            setMessages(data || []);
+        };
+        fetchMessages();
 
-        // 2. 실시간 구독 설정 (핵심!)
-        // 실시간 채널 설정 (Presence 기능 포함)
-        const channel = supabase.channel('online-users', {
+        // 2. 통합 채널 생성 (이름: 'room1')
+        const channel = supabase.channel('room1', {
             config: { presence: { key: session.user.email } }
         });
 
         channel
-            .on('presence', { event: 'sync' }, () => {
-                // 접속자 명단이 바뀔 때마다 실행
-                const state = channel.presenceState();
-                setOnlineUsers(Object.keys(state).length); // 접속 중인 고유 키(이메일) 개수 카운트
+            // [메시지 실시간 수신]
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+                setMessages((prev) => [...prev, payload.new]);
             })
-            .on('presence', { event: 'join', key: session.user.email }, () => {
-                console.log('새로운 사용자가 접속했습니다');
+            // [접속자 수 실시간 동기화]
+            .on('presence', { event: 'sync' }, () => {
+                const state = channel.presenceState();
+                setOnlineUsers(Object.keys(state).length);
             })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
-                    // 내가 접속했음을 알림
+                    // 내가 들어왔음을 추적 시작
                     await channel.track({ online_at: new Date().toISOString() });
                 }
             });
 
         return () => {
-            supabase.removeChannel(channel)
+            supabase.removeChannel(channel);
         };
-    }, [session])
+    }, [session]); // session이 바뀔 때만 재연결
 
     const sendMessage = async (e) => {
         e.preventDefault()
