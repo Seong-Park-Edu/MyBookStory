@@ -155,7 +155,7 @@ function App() {
               </>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#aaa' }}>
-                왼쪽에서 책을 검색하고 선택해 주세요.
+                위쪽에서 책을 검색하고 선택해 주세요.
               </div>
             )}
           </div>
