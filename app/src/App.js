@@ -105,7 +105,7 @@ function App() {
 
   if (!session) return <Auth />;
 
-return (
+  return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: '#f0f2f5', overflow: 'hidden' }}>
 
       {/* 1. 왼쪽: 채팅 */}
@@ -115,8 +115,39 @@ return (
 
       {/* 2. 오른쪽: 메인 작업 영역 */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ height: '65px', backgroundColor: '#fff', borderBottom: '1px solid #ddd', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 30px' }}>
-          <button onClick={() => setIsListModalOpen(true)} style={{ padding: '10px 20px', borderRadius: '25px', cursor: 'pointer', fontWeight: 'bold' }}>
+        {/* 상단 바 수정: 제목 추가 */}
+        <div style={{
+          height: '65px',
+          backgroundColor: '#fff',
+          borderBottom: '1px solid #ddd',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between', // 요소를 양 끝으로 배치
+          padding: '0 30px'
+        }}>
+          {/* 왼쪽 제목 부분 */}
+          <h2 style={{
+            margin: 0,
+            fontSize: '1.4rem',
+            color: '#333',
+            fontWeight: '800',
+            letterSpacing: '-0.5px'
+          }}>
+            📖 우리의 독서 이야기
+          </h2>
+
+          {/* 오른쪽 버튼 부분 */}
+          <button
+            onClick={() => setIsListModalOpen(true)}
+            style={{
+              padding: '10px 20px',
+              borderRadius: '25px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              border: '1px solid #333',
+              backgroundColor: '#fff'
+            }}
+          >
             📚 서재 탐색하기 ({myReviews.length})
           </button>
         </div>
@@ -130,7 +161,7 @@ return (
           <div style={{ display: 'flex', gap: '25px', height: '80%' }}>
             <div style={{ width: '280px', backgroundColor: '#fff', borderRadius: '15px', padding: '15px', overflowY: 'auto', border: '1px solid #eee' }}>
               {books.map(b => (
-                <div key={b.isbn13} onClick={() => setSelectedBook(b)} style={{ display: 'flex', gap: '10px', marginBottom: '10px', cursor: 'pointer', padding: '5px', borderRadius: '5px' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor='#f9f9f9'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor='transparent'}>
+                <div key={b.isbn13} onClick={() => setSelectedBook(b)} style={{ display: 'flex', gap: '10px', marginBottom: '10px', cursor: 'pointer', padding: '5px', borderRadius: '5px' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9f9f9'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                   <img src={b.cover} style={{ width: '40px' }} alt="c" />
                   <div style={{ fontSize: '12px', fontWeight: 'bold' }}>{b.title}</div>
                 </div>
@@ -180,7 +211,7 @@ return (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 4000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ backgroundColor: '#fff', width: '650px', maxHeight: '80vh', borderRadius: '20px', padding: '40px', overflowY: 'auto', position: 'relative' }}>
             <button onClick={() => { setViewingReview(null); setIsEditing(false); }} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', background: 'none', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
-            
+
             <div style={{ display: 'flex', gap: '25px', marginBottom: '30px' }}>
               <img src={viewingReview.cover} style={{ width: '120px', borderRadius: '8px' }} alt="v" />
               <div style={{ flex: 1 }}>
@@ -209,8 +240,8 @@ return (
                   <ReactQuill theme="snow" value={editContent} onChange={setEditContent} style={{ height: '100%' }} />
                 </div>
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                   <button onClick={() => setIsEditing(false)} style={{ padding: '10px 20px', borderRadius: '5px', border: '1px solid #ccc', cursor: 'pointer' }}>취소</button>
-                   <button onClick={() => updateReview(viewingReview.id)} style={{ padding: '10px 20px', borderRadius: '5px', border: 'none', backgroundColor: '#007bff', color: '#fff', cursor: 'pointer' }}>수정 완료</button>
+                  <button onClick={() => setIsEditing(false)} style={{ padding: '10px 20px', borderRadius: '5px', border: '1px solid #ccc', cursor: 'pointer' }}>취소</button>
+                  <button onClick={() => updateReview(viewingReview.id)} style={{ padding: '10px 20px', borderRadius: '5px', border: 'none', backgroundColor: '#007bff', color: '#fff', cursor: 'pointer' }}>수정 완료</button>
                 </div>
               </div>
             ) : (
