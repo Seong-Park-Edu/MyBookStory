@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabaseClient'
 
 export default function Chat({ session }) {
@@ -6,7 +6,21 @@ export default function Chat({ session }) {
     const [newMessage, setNewMessage] = useState('')
     const [onlineUsers, setOnlineUsers] = useState(0);
 
+    // 1. 스크롤 위치를 잡기 위한 참조(Ref) 생성
+    const messagesEndRef = useRef(null);
+
+    // 2. 메시지 목록이 바뀔 때마다 스크롤을 맨 아래로 내리는 함수
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
     useEffect(() => {
+        // 메시지가 새로 추가될 때마다 실행
+        scrollToBottom();
+    }, [messages]);
+
+    useEffect(() => {
+
         // 1. 기존 메시지 불러오기
         const fetchMessages = async () => {
             const { data } = await supabase.from('messages').select('*').order('created_at', { ascending: true });
@@ -53,6 +67,8 @@ export default function Chat({ session }) {
             <div style={{ padding: '10px', backgroundColor: '#333', color: '#fff', fontSize: '13px', textAlign: 'center' }}>
                 실시간 북토크 💬
             </div>
+
+            {/* 접속자 표시 헤더 */}
             <div style={{
                 padding: '8px',
                 backgroundColor: '#4caf50',
@@ -63,6 +79,8 @@ export default function Chat({ session }) {
             }}>
                 🟢 현재 {onlineUsers}명의 북러버가 접속 중
             </div>
+
+            {/* 메시지 출력창 */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
                 {messages.map((m, i) => {
                     const isMe = m.user_email === session.user.email;
@@ -83,7 +101,11 @@ export default function Chat({ session }) {
                         </div>
                     );
                 })}
+                {/* 3. 스크롤을 이동시킬 빈 태그(말표) 추가 */}
+                <div ref={messagesEndRef} />
             </div>
+
+            {/* 입력 폼 */}
             <form onSubmit={sendMessage} style={{ display: 'flex', padding: '10px', backgroundColor: '#fff' }}>
                 <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="메시지 입력..." style={{ flex: 1, border: '1px solid #ddd', borderRadius: '4px', padding: '5px 10px' }} />
                 <button type="submit" style={{ marginLeft: '5px', border: 'none', backgroundColor: '#333', color: '#fff', borderRadius: '4px', padding: '5px 10px' }}>전송</button>
