@@ -16,18 +16,24 @@ function App() {
   const [session, setSession] = useState(null)
 
   useEffect(() => {
-    // 1. 현재 로그인 세션 확인
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
+    // 1. 현재 세션 상태를 먼저 가져옴
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+    };
 
-    // 2. 로그인 상태 변화 감지 (로그인/로그아웃 시 자동 반영)
+    checkSession();
+
+    // 2. 인증 상태 변화(로그인, 로그아웃, 토큰 갱신 등)를 실시간 감지
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
+      console.log("인증 상태 변경됨:", _event, session); // 디버깅용
+      setSession(session);
+    });
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, []);
 
   // 서버에서 독후감 목록을 가져오는 함수
   const fetchReviews = async () => {
