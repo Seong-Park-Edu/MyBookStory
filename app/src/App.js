@@ -117,7 +117,7 @@ function App() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* 상단 바 수정: 제목 추가 */}
         <div style={{
-          height: '65px',
+          height: '70px',
           backgroundColor: '#fff',
           borderBottom: '1px solid #ddd',
           display: 'flex',
