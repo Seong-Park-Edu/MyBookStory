@@ -96,6 +96,16 @@ function App() {
     }
   };
 
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      alert("로그아웃 중 오류가 발생했습니다.");
+    } else {
+      setSession(null); // 내 앱의 세션 상태를 비움
+      alert("로그아웃 되었습니다.");
+    }
+  };
+
   // 서재 필터링 로직
   const filteredReviews = myReviews.filter(rev => {
     const matchesSearch = rev.title.toLowerCase().includes(listSearchQuery.toLowerCase());
@@ -150,6 +160,23 @@ function App() {
           >
             📚 서재 탐색하기 ({myReviews.length})
           </button>
+
+          {/* 로그아웃 버튼 */}
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: '10px 20px',
+              borderRadius: '25px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              border: 'none',
+              backgroundColor: '#ff4d4d', // 빨간색 포인트
+              color: '#fff'
+            }}
+          >
+            로그아웃
+          </button>
+
         </div>
 
         <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
