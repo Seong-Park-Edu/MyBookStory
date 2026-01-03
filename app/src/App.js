@@ -105,15 +105,15 @@ function App() {
 
   if (!session) return <Auth />;
 
-  return (
+return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: '#f0f2f5', overflow: 'hidden' }}>
 
-      {/* 왼쪽: 채팅 */}
+      {/* 1. 왼쪽: 채팅 */}
       <div style={{ width: '380px', borderRight: '1px solid #ddd', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
         <Chat session={session} />
       </div>
 
-      {/* 오른쪽: 메인 */}
+      {/* 2. 오른쪽: 메인 작업 영역 */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div style={{ height: '65px', backgroundColor: '#fff', borderBottom: '1px solid #ddd', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 30px' }}>
           <button onClick={() => setIsListModalOpen(true)} style={{ padding: '10px 20px', borderRadius: '25px', cursor: 'pointer', fontWeight: 'bold' }}>
@@ -123,14 +123,14 @@ function App() {
 
         <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
           <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="책 검색..." style={{ flex: 1, padding: '15px', borderRadius: '12px', border: '1px solid #ccc' }} />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSearch()} placeholder="책 검색..." style={{ flex: 1, padding: '15px', borderRadius: '12px', border: '1px solid #ccc' }} />
             <button onClick={handleSearch} style={{ padding: '0 30px', backgroundColor: '#333', color: '#fff', borderRadius: '12px', cursor: 'pointer' }}>검색</button>
           </div>
 
           <div style={{ display: 'flex', gap: '25px', height: '80%' }}>
             <div style={{ width: '280px', backgroundColor: '#fff', borderRadius: '15px', padding: '15px', overflowY: 'auto', border: '1px solid #eee' }}>
               {books.map(b => (
-                <div key={b.isbn13} onClick={() => setSelectedBook(b)} style={{ display: 'flex', gap: '10px', marginBottom: '10px', cursor: 'pointer' }}>
+                <div key={b.isbn13} onClick={() => setSelectedBook(b)} style={{ display: 'flex', gap: '10px', marginBottom: '10px', cursor: 'pointer', padding: '5px', borderRadius: '5px' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor='#f9f9f9'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor='transparent'}>
                   <img src={b.cover} style={{ width: '40px' }} alt="c" />
                   <div style={{ fontSize: '12px', fontWeight: 'bold' }}>{b.title}</div>
                 </div>
@@ -143,17 +143,17 @@ function App() {
                   <h3>『{selectedBook.title}』 작성 중</h3>
                   <div style={{ height: '70%' }}><ReactQuill theme="snow" value={content} onChange={setContent} style={{ height: '90%' }} /></div>
                   <div style={{ position: 'absolute', bottom: '25px', right: '25px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <label style={{ fontSize: '14px' }}><input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} /> 🌐 공개하기</label>
-                    <button onClick={saveReview} style={{ padding: '15px 40px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '10px', cursor: 'pointer' }}>저장하기</button>
+                    <label style={{ fontSize: '14px', cursor: 'pointer' }}><input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} /> 🌐 공개하기</label>
+                    <button onClick={saveReview} style={{ padding: '15px 40px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>저장하기</button>
                   </div>
                 </>
-              ) : <div style={{ color: '#ccc', textAlign: 'center', marginTop: '100px' }}>책을 선택해 주세요.</div>}
+              ) : <div style={{ color: '#ccc', textAlign: 'center', marginTop: '100px' }}>책을 검색하고 선택해 주세요.</div>}
             </div>
           </div>
         </div>
       </div>
 
-      {/* 서재 모달 */}
+      {/* 3. 서재 목록 모달 */}
       {isListModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ width: '85%', height: '85%', backgroundColor: '#fff', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
@@ -161,12 +161,12 @@ function App() {
               <button onClick={() => setViewMode('private')} style={{ backgroundColor: viewMode === 'private' ? '#333' : '#eee', color: viewMode === 'private' ? '#fff' : '#333', padding: '10px 20px', borderRadius: '20px', border: 'none', cursor: 'pointer' }}>🔒 내 서재</button>
               <button onClick={() => setViewMode('public')} style={{ backgroundColor: viewMode === 'public' ? '#333' : '#eee', color: viewMode === 'public' ? '#fff' : '#333', padding: '10px 20px', borderRadius: '20px', border: 'none', cursor: 'pointer' }}>🌍 모두의 서재</button>
               <input placeholder="서재 내 검색..." value={listSearchQuery} onChange={e => setListSearchQuery(e.target.value)} style={{ flex: 1, padding: '10px', borderRadius: '20px', border: '1px solid #ddd' }} />
-              <button onClick={() => setIsListModalOpen(false)}>닫기</button>
+              <button onClick={() => setIsListModalOpen(false)} style={{ cursor: 'pointer' }}>닫기</button>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '30px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '20px' }}>
               {filteredReviews.map(rev => (
                 <div key={rev.id} onClick={() => { setViewingReview(rev); setIsListModalOpen(false); }} style={{ cursor: 'pointer', textAlign: 'center' }}>
-                  <img src={rev.cover} style={{ width: '100%', borderRadius: '8px' }} alt="c" />
+                  <img src={rev.cover} style={{ width: '100%', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }} alt="c" />
                   <div style={{ fontSize: '13px', fontWeight: 'bold', marginTop: '5px' }}>{rev.title}</div>
                 </div>
               ))}
@@ -175,40 +175,50 @@ function App() {
         </div>
       )}
 
-      {/* 상세보기 모달 (수정/삭제 포함) */}
-      {/* 상세보기 모달 내부 코드 중 수정/삭제 버튼 부분 */}
-      <div style={{ display: 'flex', gap: '25px', marginBottom: '30px' }}>
-        <img src={viewingReview.cover} style={{ width: '120px', borderRadius: '8px' }} alt="v" />
-        <div style={{ flex: 1 }}>
-          <h2 style={{ margin: '0 0 10px 0' }}>{viewingReview.title}</h2>
-          <p style={{ color: '#666', margin: '0 0 10px 0' }}>{viewingReview.author}</p>
+      {/* 4. 상세보기 모달 (수정/삭제 로직 통합) */}
+      {viewingReview && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 4000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ backgroundColor: '#fff', width: '650px', maxHeight: '80vh', borderRadius: '20px', padding: '40px', overflowY: 'auto', position: 'relative' }}>
+            <button onClick={() => { setViewingReview(null); setIsEditing(false); }} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', background: 'none', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
+            
+            <div style={{ display: 'flex', gap: '25px', marginBottom: '30px' }}>
+              <img src={viewingReview.cover} style={{ width: '120px', borderRadius: '8px' }} alt="v" />
+              <div style={{ flex: 1 }}>
+                <h2 style={{ margin: '0 0 10px 0' }}>{viewingReview.title}</h2>
+                <p style={{ color: '#666', margin: '0 0 10px 0' }}>{viewingReview.author}</p>
 
-          {/* 🔒 본인이 쓴 글일 때만 수정/삭제 버튼 표시 */}
-          {viewingReview.user_id === session.user.id ? (
-            !isEditing && (
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button
-                  onClick={() => { setIsEditing(true); setEditContent(viewingReview.content); }}
-                  style={{ padding: '5px 15px', borderRadius: '5px', border: '1px solid #007bff', color: '#007bff', backgroundColor: '#fff', cursor: 'pointer' }}
-                >
-                  수정
-                </button>
-                <button
-                  onClick={() => deleteReview(viewingReview.id)}
-                  style={{ padding: '5px 15px', borderRadius: '5px', border: '1px solid #dc3545', color: '#dc3545', backgroundColor: '#fff', cursor: 'pointer' }}
-                >
-                  삭제
-                </button>
+                {/* 본인 여부 확인 후 버튼 노출 */}
+                {viewingReview.user_id === session.user.id ? (
+                  !isEditing && (
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button onClick={() => { setIsEditing(true); setEditContent(viewingReview.content); }} style={{ padding: '5px 15px', borderRadius: '5px', border: '1px solid #007bff', color: '#007bff', backgroundColor: '#fff', cursor: 'pointer' }}>수정</button>
+                      <button onClick={() => deleteReview(viewingReview.id)} style={{ padding: '5px 15px', borderRadius: '5px', border: '1px solid #dc3545', color: '#dc3545', backgroundColor: '#fff', cursor: 'pointer' }}>삭제</button>
+                    </div>
+                  )
+                ) : (
+                  <span style={{ fontSize: '12px', color: '#aaa', fontStyle: 'italic' }}>📍 다른 사용자의 독후감입니다</span>
+                )}
               </div>
-            )
-          ) : (
-            /* 남의 글일 경우 표시할 문구 (선택 사항) */
-            <span style={{ fontSize: '12px', color: '#aaa', fontStyle: 'italic' }}>
-              📍 다른 사용자의 독후감입니다
-            </span>
-          )}
+            </div>
+
+            <hr style={{ border: '0.5px solid #eee', marginBottom: '30px' }} />
+
+            {isEditing ? (
+              <div>
+                <div style={{ height: '300px', marginBottom: '50px' }}>
+                  <ReactQuill theme="snow" value={editContent} onChange={setEditContent} style={{ height: '100%' }} />
+                </div>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                   <button onClick={() => setIsEditing(false)} style={{ padding: '10px 20px', borderRadius: '5px', border: '1px solid #ccc', cursor: 'pointer' }}>취소</button>
+                   <button onClick={() => updateReview(viewingReview.id)} style={{ padding: '10px 20px', borderRadius: '5px', border: 'none', backgroundColor: '#007bff', color: '#fff', cursor: 'pointer' }}>수정 완료</button>
+                </div>
+              </div>
+            ) : (
+              <div className="ql-editor" dangerouslySetInnerHTML={{ __html: viewingReview.content }} style={{ lineHeight: '1.8', fontSize: '16px' }} />
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
