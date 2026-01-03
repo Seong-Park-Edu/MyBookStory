@@ -88,11 +88,11 @@ function App() {
 
   const updateReview = async (id) => {
     const { error } = await supabase.from('reviews').update({ content: editContent }).eq('id', id);
-    if (!error) { 
-      alert("수정됨"); 
-      setIsEditing(false); 
+    if (!error) {
+      alert("수정됨");
+      setIsEditing(false);
       setViewingReview({ ...viewingReview, content: editContent });
-      fetchReviews(); 
+      fetchReviews();
     }
   };
 
@@ -107,7 +107,7 @@ function App() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: '#f0f2f5', overflow: 'hidden' }}>
-      
+
       {/* 왼쪽: 채팅 */}
       <div style={{ width: '380px', borderRight: '1px solid #ddd', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
         <Chat session={session} />
@@ -176,33 +176,39 @@ function App() {
       )}
 
       {/* 상세보기 모달 (수정/삭제 포함) */}
-      {viewingReview && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 4000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ backgroundColor: '#fff', width: '650px', maxHeight: '80vh', borderRadius: '20px', padding: '40px', overflowY: 'auto', position: 'relative' }}>
-            <button onClick={() => { setViewingReview(null); setIsEditing(false); }} style={{ position: 'absolute', top: '20px', right: '20px' }}>&times;</button>
-            <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-              <img src={viewingReview.cover} style={{ width: '100px' }} alt="v" />
-              <div>
-                <h2>{viewingReview.title}</h2>
-                <p>{viewingReview.author}</p>
-                {viewingReview.user_id === session.user.id && !isEditing && (
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <button onClick={() => { setIsEditing(true); setEditContent(viewingReview.content); }}>수정</button>
-                    <button onClick={() => deleteReview(viewingReview.id)} style={{ color: 'red' }}>삭제</button>
-                  </div>
-                )}
+      {/* 상세보기 모달 내부 코드 중 수정/삭제 버튼 부분 */}
+      <div style={{ display: 'flex', gap: '25px', marginBottom: '30px' }}>
+        <img src={viewingReview.cover} style={{ width: '120px', borderRadius: '8px' }} alt="v" />
+        <div style={{ flex: 1 }}>
+          <h2 style={{ margin: '0 0 10px 0' }}>{viewingReview.title}</h2>
+          <p style={{ color: '#666', margin: '0 0 10px 0' }}>{viewingReview.author}</p>
+
+          {/* 🔒 본인이 쓴 글일 때만 수정/삭제 버튼 표시 */}
+          {viewingReview.user_id === session.user.id ? (
+            !isEditing && (
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  onClick={() => { setIsEditing(true); setEditContent(viewingReview.content); }}
+                  style={{ padding: '5px 15px', borderRadius: '5px', border: '1px solid #007bff', color: '#007bff', backgroundColor: '#fff', cursor: 'pointer' }}
+                >
+                  수정
+                </button>
+                <button
+                  onClick={() => deleteReview(viewingReview.id)}
+                  style={{ padding: '5px 15px', borderRadius: '5px', border: '1px solid #dc3545', color: '#dc3545', backgroundColor: '#fff', cursor: 'pointer' }}
+                >
+                  삭제
+                </button>
               </div>
-            </div>
-            <hr />
-            {isEditing ? (
-              <div>
-                <ReactQuill theme="snow" value={editContent} onChange={setEditContent} />
-                <button onClick={() => updateReview(viewingReview.id)}>완료</button>
-              </div>
-            ) : <div className="ql-editor" dangerouslySetInnerHTML={{ __html: viewingReview.content }} />}
-          </div>
+            )
+          ) : (
+            /* 남의 글일 경우 표시할 문구 (선택 사항) */
+            <span style={{ fontSize: '12px', color: '#aaa', fontStyle: 'italic' }}>
+              📍 다른 사용자의 독후감입니다
+            </span>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
