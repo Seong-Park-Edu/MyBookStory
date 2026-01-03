@@ -4,6 +4,7 @@ import ReactQuill from 'react-quill-new'; // react-quill 대신 react-quill-new 
 import 'react-quill-new/dist/quill.snow.css'; // css 경로도 new로 변경
 import { supabase } from './supabaseClient'
 import Auth from './Auth'
+import Chat from './Chat'
 
 function App() {
   const [query, setQuery] = useState('');
@@ -200,6 +201,7 @@ function App() {
               )}
             </div>
           </div>
+          <Chat session={session} /> {/* 채팅창 등장! */}
         </>
       )}
     </div>
