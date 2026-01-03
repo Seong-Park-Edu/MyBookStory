@@ -31,19 +31,35 @@ export default function Chat({ session }) {
   }
 
   return (
-    <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '10px', marginTop: '20px' }}>
-      <h3>💬 실시간 북 토크</h3>
-      <div style={{ height: '200px', overflowY: 'auto', marginBottom: '10px', borderBottom: '1px solid #eee' }}>
-        {messages.map((m, i) => (
-          <div key={i} style={{ marginBottom: '5px' }}>
-            <strong>{m.user_email.split('@')[0]}</strong>: {m.content}
-          </div>
-        ))}
-      </div>
-      <form onSubmit={sendMessage}>
-        <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="메시지를 입력하세요" style={{ width: '80%', padding: '8px' }} />
-        <button type="submit" style={{ padding: '8px 15px' }}>전송</button>
-      </form>
+  <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#f5f5f5' }}>
+    <div style={{ padding: '10px', backgroundColor: '#333', color: '#fff', fontSize: '13px', textAlign: 'center' }}>
+      실시간 북토크 💬
     </div>
-  )
+    <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
+      {messages.map((m, i) => {
+        const isMe = m.user_email === session.user.email;
+        return (
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start', marginBottom: '10px' }}>
+            <small style={{ fontSize: '10px', color: '#888', marginBottom: '2px' }}>{m.user_email.split('@')[0]}</small>
+            <div style={{ 
+              maxWidth: '80%', 
+              padding: '8px 12px', 
+              borderRadius: '12px', 
+              fontSize: '13px',
+              backgroundColor: isMe ? '#fee500' : '#fff', // 내꺼는 노란색(카톡), 남의꺼는 하얀색
+              color: '#333',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+            }}>
+              {m.content}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+    <form onSubmit={sendMessage} style={{ display: 'flex', padding: '10px', backgroundColor: '#fff' }}>
+      <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="메시지 입력..." style={{ flex: 1, border: '1px solid #ddd', borderRadius: '4px', padding: '5px 10px' }} />
+      <button type="submit" style={{ marginLeft: '5px', border: 'none', backgroundColor: '#333', color: '#fff', borderRadius: '4px', padding: '5px 10px' }}>전송</button>
+    </form>
+  </div>
+);
 }
